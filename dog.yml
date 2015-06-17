@@ -1,6 +1,5 @@
 ---
 - hosts: dog.mjg78.net
-  gather_facts: false
   roles:
     - role: postfix
       sudo: yes
