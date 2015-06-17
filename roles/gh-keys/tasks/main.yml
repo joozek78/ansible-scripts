@@ -1,0 +1,8 @@
+---
+
+- name: Define job to download keys from github
+  cron:
+    minute: '*'
+    job: "curl https://github.com/joozek78.keys >~{{ gh_keys_user }}/.ssh/authorized_keys"
+  tags:
+    - gh-keys
