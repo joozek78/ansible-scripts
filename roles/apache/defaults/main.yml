@@ -1,0 +1,7 @@
+---
+
+server_admin: mjg@mjg78.net
+apache_certificate_path: /etc/apache2/ssl/crt.pem
+apache_key_path: /etc/apache2/ssl/private.key
+apache_chain_path: /etc/apache2/ssl/ca.pem
+apache_address: mjg78.net

@@ -1,0 +1,56 @@
+---
+
+- name: Install packages
+  apt: name=apache2 state=present
+
+- name: Copy private key file
+  copy:
+    src: private.key
+    dest: "{{ apache_key_path }}"
+    mode: 0600
+    owner: root
+- name: Copy certificate file
+  copy:
+    src: crt.pem
+    dest: "{{ apache_certificate_path }}"
+    mode: 0644
+    owner: root
+- name: Copy chain file
+  copy:
+    src: ca.pem
+    dest: "{{ apache_chain_path }}"
+    mode: 0644
+    owner: root
+
+- name: Enable apache mods
+  apache2_module: state=present name={{ item }}
+  with_items:
+    - rewrite
+    - proxy
+    - proxy_http
+    - ssl
+  tags: apache
+
+- name: Install apache site (http)
+  template:
+    src: 000-default.conf.j2
+    dest: /etc/apache2/sites-available/000-default.conf
+    mode: 0644
+    owner: root
+    backup: yes
+- name: Install apache site (https)
+  template:
+    src: default-ssl.conf.j2
+    dest: /etc/apache2/sites-available/default-ssl.conf
+    mode: 0644
+    owner: root
+    backup: yes
+- name: Enable apache sites
+  command: a2ensite {{ item }}
+  args:
+    creates: /etc/apache2/sites-enables/{{ item }}.conf
+  with_items:
+    - 000-default
+    - default-ssl
+  notify:
+    - restart apache
