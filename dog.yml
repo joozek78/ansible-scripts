@@ -1,0 +1,9 @@
+---
+- hosts: dog.mjg78.net
+  gather_facts: false
+  roles:
+    - role: postfix
+      sudo: yes
+  vars:
+    - postfix_domain: mjg78.net
+    - postfix_goto_address: mj.golinski@gmail.com

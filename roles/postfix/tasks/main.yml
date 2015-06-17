@@ -1,0 +1,46 @@
+---
+# Defines tasks to install and configure Postfix
+
+- name: Install packages for Debian derivatives
+  apt: >
+    pkg={{ item }}
+    state=present
+  with_items: postfix_packages
+  tags:
+    - common
+    - postfix
+
+- name: Write Postfix configuration template
+  template: >
+    src=main-cf.j2
+    dest={{ postfix_config_dir }}/main.cf
+    mode=0644 owner=root group=root
+    backup=yes
+  notify:
+    - restart postfix
+    - send test email
+  tags:
+    - common
+    - postfix
+
+- name: Configure virtual aliases
+  template: >
+    src=virtual.j2
+    dest=/etc/postfix/virtual
+    mode=0644 owner=root group=root
+  notify:
+    - refresh virtual map
+    - restart postfix
+    - send test email
+  tags:
+    - common
+    - postfix
+
+- name: Start Postfix on server boot
+  service: >
+    name={{ postfix_service }}
+    state=started
+    enabled=yes
+  tags:
+    - common
+    - postfix
