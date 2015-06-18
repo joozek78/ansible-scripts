@@ -9,8 +9,8 @@
     SSLProxyEngine on
     RewriteEngine on
     RewriteRule ^/$ /cv/ [R]
+    RewriteRule ^/cv$ /cv/ [R] 
     RewriteRule ^/cv/$ /cv/index.html 
-    RewriteRule ^/cv$ /cv/index.html 
     RewriteRule ^/cv/(.*)$ https://dl.dropboxusercontent.com/u/11057009/cv/$1 [P]
     ProxyPassReverse /cv https://dl.dropboxusercontent.com/u/11057009/cv/
 
