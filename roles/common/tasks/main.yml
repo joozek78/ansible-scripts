@@ -1,0 +1,50 @@
+---
+- name: set hostname
+  hostname: name={{hostname}}
+  when: hostname is defined
+
+- name: Add ansible ppa
+  apt_repository: repo='ppa:ansible/ansible' update_cache=true
+
+- name: Install packages
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+    cache_valid_time: 60
+  with_items:
+    - ansible
+    - git
+
+- name: Install authorized_keys
+  sudo: false
+  authorized_key:
+    key: https://github.com/joozek78.keys
+    user: "{{ansible_ssh_user}}"
+- name: Download dotfiles and ansible-scripts
+  sudo: false
+  git:
+    repo: git://github.com/joozek78/{{item}}
+    dest: "{{item}}"
+    accept_hostkey: true
+  with_items:
+    - dotfiles
+    - ansible-scripts
+- name: Run dotfiles
+  sudo: false
+  command: >
+    rsync --exclude ".git/" --exclude ".DS_Store" --exclude "bootstrap.sh"
+    --exclude "README.md" --exclude "LICENSE-MIT.txt" -avh --no-perms dotfiles/ ~
+#  synchronize:
+#    src: dotfiles
+#    dest: ~
+#    rsync_opts: >
+#      --exclude=.git --exclude=.DS_Store --exclude "bootstrap.sh"
+#      --exclude "README.md" --exclude "LICENSE-MIT.txt"
+#  delegate_to: "{{inventory_hostname}}"
+- name: Create private key
+  sudo: false
+  shell: cat /dev/zero | ssh-keygen -q -N ""
+  args:
+    creates: ~/.ssh/id_rsa
+

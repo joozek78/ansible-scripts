@@ -1,2 +1,4 @@
 # This is ansible inventory file
 dog.mjg78.net
+localhost connection=local
+
